@@ -159,7 +159,7 @@ class SvnClient(VcsClientBase):
         """
         if self.detect_presence():
             # 3305: parsing not robust to non-US locales
-            cmd = 'svn info %s' % self._path
+            cmd = 'svn info %s' % sanitized(self._path)
             _, output, _ = run_shell_command(cmd, shell=True)
             matches = [l for l in output.splitlines() if l.startswith('URL: ')]
             if matches:
@@ -184,7 +184,7 @@ class SvnClient(VcsClientBase):
             version = ''
         cmd = 'svn co %s %s %s' % (sanitized(version),
                                    sanitized(url),
-                                   self._path)
+                                   sanitized(self._path))
         value, _, msg = run_shell_command(cmd,
                                           shell=True,
                                           no_filter=True)
@@ -206,7 +206,7 @@ class SvnClient(VcsClientBase):
         elif version is None:
             version = ''
         cmd = 'svn up %s %s --non-interactive' % (sanitized(version),
-                                                  self._path)
+                                                  sanitized(self._path))
         value, _, _ = run_shell_command(cmd,
                                         shell=True,
                                         no_filter=True)
@@ -258,7 +258,7 @@ class SvnClient(VcsClientBase):
                 command += sanitized(spec)
             else:
                 command += sanitized('-r%s' % spec)
-        command += " %s" % path
+        command += " %s" % sanitized(path)
         # #3305: parsing not robust to non-US locales
         _, output, _ = run_shell_command(command, shell=True, us_env=True)
         if output is not None:
@@ -359,7 +359,7 @@ class SvnClient(VcsClientBase):
 
     def export_repository(self, version, basepath):
         # Run the svn export cmd
-        cmd = 'svn export {0} {1}'.format(os.path.join(self._path, version),
+        cmd = 'svn export {0} {1}'.format(os.path.join(sanitized(self._path), version),
                                           basepath)
         result, _, _ = run_shell_command(cmd, shell=True)
         if result:

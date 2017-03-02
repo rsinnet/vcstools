@@ -153,7 +153,7 @@ class HgClient(VcsClientBase):
         except OSError:
             # OSError thrown if directory already exists this is ok
             pass
-        cmd = "hg clone %s %s" % (sanitized(url), self._path)
+        cmd = "hg clone %s %s" % (sanitized(url), sanitized(self._path))
         value, _, msg = run_shell_command(cmd,
                                           shell=True,
                                           no_filter=True)
@@ -229,7 +229,7 @@ class HgClient(VcsClientBase):
                     repeated = True
             return None
         else:
-            command = 'hg identify -i %s' % self._path
+            command = 'hg identify -i %s' % sanitized(self._path)
             _, output, _ = run_shell_command(command, shell=True, us_env=True)
             if output is None or output.strip() == '' or output.startswith("abort"):
                 return None
@@ -250,7 +250,7 @@ class HgClient(VcsClientBase):
 
     def get_branch(self):
         if self.path_exists():
-            command = "hg branch --repository %s" % self.get_path()
+            command = "hg branch --repository %s" % sanitized(self.get_path())
             _, output, _ = run_shell_command(command, shell=True)
             if output is not None:
                 return output.strip()
@@ -299,7 +299,7 @@ class HgClient(VcsClientBase):
                                          '{desc}']) + '\x1e'
 
             command = "hg log %s -b %s --template '%s' %s" % (sanitized(relpath),
-                                                              self.get_branch(),
+                                                              sanitized(self.get_branch()),
                                                               HG_LOG_FORMAT,
                                                               limit_cmd)
             return_code, response_str, stderr = run_shell_command(command, shell=True, cwd=self._path)

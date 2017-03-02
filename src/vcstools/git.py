@@ -193,7 +193,7 @@ class GitClient(VcsClientBase):
         if version is None:
             # quicker than using _do_update, but undesired when switching branches next
             cmd += ' --recursive'
-        cmd += ' %s %s' % (url, self._path)
+        cmd += ' %s %s' % (url, sanitized(self._path))
         value, _, msg = run_shell_command(cmd,
                                           shell=True,
                                           no_filter=True,
@@ -479,7 +479,7 @@ class GitClient(VcsClientBase):
             GIT_COMMIT_FIELDS = ['id', 'author', 'email', 'date', 'message']
             GIT_LOG_FORMAT = '%x1f'.join(['%H', '%an', '%ae', '%ad', '%s']) + '%x1e'
 
-            command = "git --work-tree=%s log --format=\"%s\" %s %s " % (self._path, GIT_LOG_FORMAT,
+            command = "git --work-tree=%s log --format=\"%s\" %s %s " % (sanitized(self._path), GIT_LOG_FORMAT,
                                                                          limit_cmd, sanitized(relpath))
             return_code, response_str, stderr = run_shell_command(command, shell=True, cwd=self._path)
 

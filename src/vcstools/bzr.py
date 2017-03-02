@@ -96,7 +96,7 @@ class BzrClient(VcsClientBase):
         """
         result = None
         if self.detect_presence():
-            cmd = 'bzr info %s' % self._path
+            cmd = 'bzr info %s' % sanitized(self._path)
             _, output, _ = run_shell_command(cmd, shell=True, us_env=True)
             matches = [l for l in output.splitlines() if l.startswith('  parent branch: ')]
             if matches:
@@ -144,7 +144,7 @@ class BzrClient(VcsClientBase):
         cmd = 'bzr branch'
         if version:
             cmd += ' -r %s' % version
-        cmd += ' %s %s' % (url, self._path)
+        cmd += ' %s %s' % (url, sanitized(self._path))
         value, _, msg = run_shell_command(cmd,
                                           shell=True,
                                           show_stdout=verbose,
@@ -223,8 +223,8 @@ class BzrClient(VcsClientBase):
             basepath = self._path
         if self.path_exists():
             rel_path = sanitized(normalized_rel_path(self._path, basepath))
-            command = "bzr diff %s" % rel_path
-            command += " -p1 --prefix %s/:%s/" % (rel_path, rel_path)
+            command = "bzr diff %s" % sanitized(rel_path)
+            command += " -p1 --prefix %s/:%s/" % ((sanitized(rel_path),) * 2)
             _, response, _ = run_shell_command(command, shell=True, cwd=basepath)
         return response
 
