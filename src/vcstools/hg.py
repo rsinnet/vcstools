@@ -153,7 +153,7 @@ class HgClient(VcsClientBase):
         except OSError:
             # OSError thrown if directory already exists this is ok
             pass
-        cmd = "hg clone %s %s" % (sanitized(url), self._path)
+        cmd = "hg clone --ui.clonebundles=false %s %s" % (sanitized(url), self._path)
         value, _, msg = run_shell_command(cmd,
                                           shell=True,
                                           no_filter=True)
